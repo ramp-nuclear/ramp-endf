@@ -1,0 +1,7 @@
+dependencies:
+  - endf
+  - numpy
+  - multipledispatch
+  - more-itertools
+  - uncertainties
+  - setuptools
