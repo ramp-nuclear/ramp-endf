@@ -99,7 +99,6 @@ def test_U238_file_read_graph_by_regression(data_regression):
     decay_file = Path(join(test_data_dir, "dec-092_U_238.endf"))
     db = parse_spontaneous_fission(spf_file)
     processes = parse_decay_processes(decay_file, spf_db=db)
-    iso = processes[0].parent
     g = DecayGraph()
     for process in processes:
         g.add_edge_from_process(process)
