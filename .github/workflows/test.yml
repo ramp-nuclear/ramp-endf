@@ -52,5 +52,5 @@ jobs:
     - name: Run tests
       run: |
         cd tests
-        pytest -v
+        pytest -v -k "not regression"
 

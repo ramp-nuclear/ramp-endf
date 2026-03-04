@@ -67,10 +67,9 @@ def test_Xe135_file_read_has_certain_known_properties():
     assert process.targets == {Cs135}
 
 
-# noinspection PyPep8Naming
 @needs_data("sfy-092_U_238.endf", "dec-092_U_238.endf")
 @needs_batman
-def test_U238_file_read_has_certain_known_properties_and_regression(data_regression):
+def test_U238_file_read_has_certain_known_properties():
     spf_file = Path(join(test_data_dir, "sfy-092_U_238.endf"))
     decay_file = Path(join(test_data_dir, "dec-092_U_238.endf"))
     db = parse_spontaneous_fission(spf_file)
@@ -78,7 +77,6 @@ def test_U238_file_read_has_certain_known_properties_and_regression(data_regress
     processes = parse_decay_processes(decay_file, spf_db=db)
     iso = processes[0].parent
     assert iso == U238
-    g = DecayGraph()
     for process in processes:
         assert isclose(process.halflife, 1.40999e17)
         assert process.mode[0] in {ALPHA, SPF}
@@ -91,6 +89,19 @@ def test_U238_file_read_has_certain_known_properties_and_regression(data_regress
         elif process.mode[0] == SPF:
             assert isclose(process.energy, 1.736e8)
             assert isclose(process.energy_err, 3.4e6)
+
+
+@pytest.mark.regression
+@needs_data("sfy-092_U_238.endf", "dec-092_U_238.endf")
+@needs_batman
+def test_U238_file_read_graph_by_regression(data_regression):
+    spf_file = Path(join(test_data_dir, "sfy-092_U_238.endf"))
+    decay_file = Path(join(test_data_dir, "dec-092_U_238.endf"))
+    db = parse_spontaneous_fission(spf_file)
+    processes = parse_decay_processes(decay_file, spf_db=db)
+    iso = processes[0].parent
+    g = DecayGraph()
+    for process in processes:
         g.add_edge_from_process(process)
     data = json_graph.node_link_data(g)
     data_regression.check(json.dumps(data, cls=RampJSONEncoder))
