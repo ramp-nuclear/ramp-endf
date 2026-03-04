@@ -1,5 +1,5 @@
+from math import exp, log
 from typing import Iterable
-from math import log, exp
 
 import numpy as np
 

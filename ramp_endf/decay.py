@@ -7,23 +7,20 @@ This uses the dec files, that contain decay data for card MT=451
 import itertools as it
 from collections import Counter
 from dataclasses import dataclass, field
-from enum import IntEnum
 from io import StringIO
 from math import log
 from pathlib import Path
-from typing import (Dict, Tuple, Any, Sequence, List, FrozenSet, IO, TypeVar, Type)
-from typing import Union, Optional
+from typing import IO, Any, Dict, FrozenSet, List, Optional, Sequence, Tuple, Type, TypeVar, Union
 
-from isotopes import ZAID, H1, He4
+from endf.records import get_head_record, get_list_record, get_tab1_record
+from isotopes import H1, ZAID, He4
 from multipledispatch import dispatch
 from uncertainties import UFloat, nominal_value, std_dev
 
-from .evaluation import get_evaluations, Evaluation
-from endf.records import get_head_record, get_list_record, get_tab1_record
-from .modes import (BETA_M, BETA_P, ISOMERIC_TRANSITION, ALPHA, NEUTRON, SPF, 
-                    PROTON)
-from .rad_types import γ, β_m, β_p, α, n, SF, p, e_m, x
-from .units import CMBarnPerSecond, EV, Second
+from .evaluation import Evaluation, get_evaluations
+from .modes import ALPHA, BETA_M, BETA_P, ISOMERIC_TRANSITION, NEUTRON, PROTON, SPF
+from .rad_types import SF, e_m, n, p, x, α, β_m, β_p, γ
+from .units import EV, CMBarnPerSecond, Second
 from .util import halflife_to_rate, ufloat
 
 __all__ = ['parse_decay_processes', 'DecayProcess', 'Decay']

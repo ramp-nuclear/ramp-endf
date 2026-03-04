@@ -2,10 +2,11 @@
 
 """
 from pathlib import Path
-from typing import Sequence, Dict
+from typing import Dict, Sequence
 
 from isotopes import ZAID
-from .fission import parse_induced_fission, FissBranch, modlogger
+
+from .fission import FissBranch, modlogger, parse_induced_fission
 
 SPFData = Dict[ZAID, Sequence[FissBranch]]
 
