@@ -41,6 +41,7 @@ test = [
     "pytest",
     "pytest-regressions",
     "ramp-core",
+    "ramp-batman",
 ]
 
 [tool.setuptools.packages.find]

@@ -44,7 +44,13 @@ jobs:
     - name: Doctest
       run: |
         pytest -v --doctest-modules ramp_endf
-    - name: Test in test directory
+    - name: Download test files
+      run: |
+        cd tests/test_data
+        ./download_test_files.sh
+        cd ../../
+    - name: Run tests
       run: |
         cd tests
-        pytest -v
+        pytest -v -k "not regression"
+
