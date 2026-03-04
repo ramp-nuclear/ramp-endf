@@ -3,7 +3,7 @@ from os import PathLike
 from pathlib import PurePath
 from typing import IO, Iterable
 
-from endf.records import get_head_record, get_cont_record, get_text_record, int_endf
+from endf.records import get_cont_record, get_head_record, get_text_record, int_endf
 from isotopes import ZAID
 
 _LIBRARY = {0: 'ENDF/B', 1: 'ENDF/A', 2: 'JEFF', 3: 'EFF',

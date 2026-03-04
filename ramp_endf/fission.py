@@ -7,14 +7,14 @@ from dataclasses import dataclass
 from io import StringIO
 from os import PathLike
 from pathlib import Path
-from typing import Sequence, Dict, Tuple, IO
-from uncertainties import nominal_value, std_dev
+from typing import IO, Dict, Sequence, Tuple
 
 import numpy as np
-
-from isotopes import ZAID
-from .evaluation import Evaluation, get_evaluations
 from endf.records import get_head_record, get_list_record
+from isotopes import ZAID
+from uncertainties import nominal_value, std_dev
+
+from .evaluation import Evaluation, get_evaluations
 from .util import ufloat
 
 eV = float

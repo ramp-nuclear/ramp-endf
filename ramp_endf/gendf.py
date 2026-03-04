@@ -1,16 +1,16 @@
+import itertools as it
+from io import StringIO
 from os import PathLike
 from pathlib import PurePath
-from io import StringIO
 from typing import IO
 
-from endf.records import get_list_record, get_cont_record
-import itertools as it
+from endf.records import get_cont_record, get_list_record
 
 
 class GENDF:
     def __init__(self, filename_or_obj: PathLike | IO):
         if isinstance(filename_or_obj, (str, PurePath)):
-            fh = open(str(filename_or_obj), 'r')
+            fh = open(str(filename_or_obj), "r")
         else:
             fh = filename_or_obj
         self.section = {}
@@ -44,10 +44,10 @@ class GENDF:
                 fh.readline()
                 break
 
-            section_data = ''
+            section_data = ""
             while True:
                 line = fh.readline()
-                if line[72:75] == '  0':
+                if line[72:75] == "  0":
                     break
                 else:
                     section_data += line
@@ -60,9 +60,9 @@ class GENDF:
         # Information about target/projectile
         items = get_cont_record(file_obj)
         Z, A = divmod(items[0], 1000)
-        self.target['atomic_number'] = Z
-        self.target['mass_number'] = A
-        self.target['mass'] = items[1]
+        self.target["atomic_number"] = Z
+        self.target["mass_number"] = A
+        self.target["mass"] = items[1]
         assert items[2] == 0
         nz = items[3]
         assert items[4] == -1
@@ -72,7 +72,6 @@ class GENDF:
         assert header[1] == 0.0
         ngn = header[2]
         ngg = header[3]
-        nw = header[4]
         assert header[5] == 0
         items = iter(items[ntw:])
         self.sigma_zeros = list(it.islice(items, nz))
