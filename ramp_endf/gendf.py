@@ -9,49 +9,52 @@ from endf.records import get_cont_record, get_list_record
 
 class GENDF:
     def __init__(self, filename_or_obj: PathLike | IO):
-        if isinstance(filename_or_obj, (str, PurePath)):
-            fh = open(str(filename_or_obj), "r")
-        else:
-            fh = filename_or_obj
+        opened = isinstance(filename_or_obj, (str, PurePath))
+        fh = open(str(filename_or_obj), "r") if opened else filename_or_obj
         self.section = {}
         self.info = {}
         self.target = {}
 
-        MF = 0
+        try:
+            MF = 0
 
-        # Determine MAT number for this evaluation
-        while MF == 0:
-            position = fh.tell()
-            line = fh.readline()
-            MF = int(line[70:72])
-        self.material = int(line[66:70])
-        fh.seek(position)
-
-        while True:
-            # Find next section
-            while True:
+            # Determine MAT number for this evaluation
+            while MF == 0:
                 position = fh.tell()
                 line = fh.readline()
-                MAT = int(line[66:70])
                 MF = int(line[70:72])
-                MT = int(line[72:75])
-                if MT > 0 or MAT == 0:
-                    fh.seek(position)
-                    break
+            self.material = int(line[66:70])
+            fh.seek(position)
 
-            # If end of material reached, exit loop
-            if MAT == 0:
-                fh.readline()
-                break
-
-            section_data = ""
             while True:
-                line = fh.readline()
-                if line[72:75] == "  0":
+                # Find next section
+                while True:
+                    position = fh.tell()
+                    line = fh.readline()
+                    MAT = int(line[66:70])
+                    MF = int(line[70:72])
+                    MT = int(line[72:75])
+                    if MT > 0 or MAT == 0:
+                        fh.seek(position)
+                        break
+
+                # If end of material reached, exit loop
+                if MAT == 0:
+                    fh.readline()
                     break
-                else:
-                    section_data += line
-            self.section[MF, MT] = section_data
+
+                section_data = ""
+                while True:
+                    line = fh.readline()
+                    if line[72:75] == "  0":
+                        break
+                    else:
+                        section_data += line
+                self.section[MF, MT] = section_data
+        finally:
+            # close only a file opened here from a path; a caller's file object stays open
+            if opened:
+                fh.close()
         self._read_header()
 
     def _read_header(self):
