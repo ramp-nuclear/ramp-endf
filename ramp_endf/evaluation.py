@@ -59,52 +59,54 @@ class Evaluation:
     """
 
     def __init__(self, filename_or_obj: PathLike | IO):
-        if isinstance(filename_or_obj, (str, PurePath)):
-            fh = open(str(filename_or_obj), 'r')
-        else:
-            fh = filename_or_obj
+        opened = isinstance(filename_or_obj, (str, PurePath))
+        fh = open(str(filename_or_obj), 'r') if opened else filename_or_obj
         self.section = {}
         self.info = {}
         self.target = {}
         self.projectile = {}
         self.reaction_list = []
 
-        mf = 0
-        # Determine MAT number for this evaluation
-        while mf == 0:
-            position = fh.tell()
-            line = fh.readline()
-            mf = int_endf(line[70:72])
-        # These are actually safe because the while loop is always entered at least once.
-        self.material = int_endf(line[66:70])
-        fh.seek(position)
-
-        while True:
-            # Find next section
-            while True:
+        try:
+            mf = 0
+            # Determine MAT number for this evaluation
+            while mf == 0:
                 position = fh.tell()
                 line = fh.readline()
-                mat = int_endf(line[66:70])
                 mf = int_endf(line[70:72])
-                mt = int_endf(line[72:75])
-                if mt > 0 or mat == 0:
-                    fh.seek(position)
-                    break
+            # These are actually safe because the while loop is always entered at least once.
+            self.material = int_endf(line[66:70])
+            fh.seek(position)
 
-            # If end of material reached, exit loop
-            if mat == 0:
-                fh.readline()
-                break
-
-            section_data = ''
             while True:
-                line = fh.readline()
-                if line[72:75] == '  0':
-                    break
-                else:
-                    section_data += line
-            self.section[mf, mt] = section_data
+                # Find next section
+                while True:
+                    position = fh.tell()
+                    line = fh.readline()
+                    mat = int_endf(line[66:70])
+                    mf = int_endf(line[70:72])
+                    mt = int_endf(line[72:75])
+                    if mt > 0 or mat == 0:
+                        fh.seek(position)
+                        break
 
+                # If end of material reached, exit loop
+                if mat == 0:
+                    fh.readline()
+                    break
+
+                section_data = ''
+                while True:
+                    line = fh.readline()
+                    if line[72:75] == '  0':
+                        break
+                    else:
+                        section_data += line
+                self.section[mf, mt] = section_data
+        finally:
+            # close only a file opened here from a path; a caller's file object stays open
+            if opened:
+                fh.close()
         self._read_header()
 
     def __repr__(self):
